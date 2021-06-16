@@ -88,7 +88,7 @@ module ActiveRecord
         time:        { name: "timestamp" },
         date:        { name: "date" },
         bigint:      { name: "bigint" },
-        boolean:     { name: "boolean" },
+        boolean:     { name: "varchar" },
       }
 
       OID = Redshift::OID #:nodoc:
@@ -352,7 +352,7 @@ module ActiveRecord
           m.alias_type 'char', 'varchar'
           m.alias_type 'name', 'varchar'
           m.alias_type 'bpchar', 'varchar'
-          m.register_type 'bool', Type::Boolean.new
+          m.register_type 'bool', Type::String.new
           m.alias_type 'timestamptz', 'timestamp'
           m.register_type 'date', Type::Date.new
           m.register_type 'time', Type::Time.new
@@ -658,8 +658,8 @@ module ActiveRecord
         def add_pg_encoders
           map = PG::TypeMapByClass.new
           map[Integer] = PG::TextEncoder::Integer.new
-          map[TrueClass] = PG::TextEncoder::Boolean.new
-          map[FalseClass] = PG::TextEncoder::Boolean.new
+          map[TrueClass] = PG::TextEncoder::String.new
+          map[FalseClass] = PG::TextEncoder::String.new
           @connection.type_map_for_queries = map
         end
 
@@ -687,7 +687,7 @@ module ActiveRecord
             "oid" => PG::TextDecoder::Integer,
             "float4" => PG::TextDecoder::Float,
             "float8" => PG::TextDecoder::Float,
-            "bool" => PG::TextDecoder::Boolean,
+            "bool" => PG::TextDecoder::String,
           }
 
           if defined?(PG::TextDecoder::TimestampUtc)
