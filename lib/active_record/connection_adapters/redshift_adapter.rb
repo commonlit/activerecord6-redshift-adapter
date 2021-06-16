@@ -88,7 +88,7 @@ module ActiveRecord
         time:        { name: "timestamp" },
         date:        { name: "date" },
         bigint:      { name: "bigint" },
-        boolean:     { name: "varchar" },
+        boolean:     { name: "boolean" },
       }
 
       OID = Redshift::OID #:nodoc:
@@ -352,7 +352,7 @@ module ActiveRecord
           m.alias_type 'char', 'varchar'
           m.alias_type 'name', 'varchar'
           m.alias_type 'bpchar', 'varchar'
-          m.register_type 'bool', Type::String.new
+          m.register_type 'bool', 'varchar'
           m.alias_type 'timestamptz', 'timestamp'
           m.register_type 'date', Type::Date.new
           m.register_type 'time', Type::Time.new
