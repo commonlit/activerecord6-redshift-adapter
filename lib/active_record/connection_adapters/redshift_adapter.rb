@@ -352,7 +352,7 @@ module ActiveRecord
           m.alias_type 'char', 'varchar'
           m.alias_type 'name', 'varchar'
           m.alias_type 'bpchar', 'varchar'
-          m.register_type 'bool', 'varchar'
+          m.register_type 'bool', OID::Boolean.new
           m.alias_type 'timestamptz', 'timestamp'
           m.register_type 'date', Type::Date.new
           m.register_type 'time', Type::Time.new

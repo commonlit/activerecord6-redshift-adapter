@@ -65,6 +65,22 @@ module ActiveRecord
           end
         end
 
+        def quoted_true
+          "TRUE"
+        end
+
+        def unquoted_true
+          "true"
+        end
+
+        def quoted_false
+          "FALSE"
+        end
+
+        def unquoted_false
+          "false"
+        end
+
         private
 
         def _quote(value)
