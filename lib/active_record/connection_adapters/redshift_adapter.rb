@@ -20,6 +20,18 @@ require 'ipaddr'
 
 ActiveRecord::Tasks::DatabaseTasks.register_task(/redshift/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
 
+module ActiveModel
+  module Type
+    class RedshiftString < Type::ImmutableString
+      def initialize(**args)
+        @true  = -(args.delete(:true)&.to_s  || "true")
+        @false = -(args.delete(:false)&.to_s || "false")
+        super
+      end
+    end
+  end
+end
+
 module ActiveRecord
   module ConnectionHandling # :nodoc:
     RS_VALID_CONN_PARAMS = [:host, :hostaddr, :port, :dbname, :user, :password, :connect_timeout,
@@ -348,7 +360,7 @@ module ActiveRecord
           m.register_type 'float4', Type::Float.new
           m.alias_type 'float8', 'float4'
           m.register_type 'text', Type::Text.new
-          register_class_with_limit m, 'varchar', Type::String
+          register_class_with_limit m, 'varchar', ActiveModel::Type::RedshiftString
           m.alias_type 'char', 'varchar'
           m.alias_type 'name', 'varchar'
           m.alias_type 'bpchar', 'varchar'
