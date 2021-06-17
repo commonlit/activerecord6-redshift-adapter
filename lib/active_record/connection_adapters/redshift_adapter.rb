@@ -658,8 +658,8 @@ module ActiveRecord
         def add_pg_encoders
           map = PG::TypeMapByClass.new
           map[Integer] = PG::TextEncoder::Integer.new
-          map[TrueClass] = PG::TextEncoder::Boolean.new
-          map[FalseClass] = PG::TextEncoder::Boolean.new
+          map[TrueClass] = PG::TextEncoder::String.new
+          map[FalseClass] = PG::TextEncoder::String.new
           @connection.type_map_for_queries = map
         end
 
