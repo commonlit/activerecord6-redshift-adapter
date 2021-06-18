@@ -20,22 +20,22 @@ require 'ipaddr'
 
 ActiveRecord::Tasks::DatabaseTasks.register_task(/redshift/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
 
-module Arel # :nodoc: all
-  module Visitors
-    class Redshift < PostgreSQL
-      private
-
-      def visit_Arel_Nodes_True(o, collector)
-        binding.pry
-        collector << "'true'"
-      end
-
-      def visit_Arel_Nodes_False(o, collector)
-        collector << "'false'"
-      end
-    end
-  end
-end
+# module Arel # :nodoc: all
+#   module Visitors
+#     class Redshift < PostgreSQL
+#       private
+#
+#       def visit_Arel_Nodes_True(o, collector)
+#         binding.pry
+#         collector << "'true'"
+#       end
+#
+#       def visit_Arel_Nodes_False(o, collector)
+#         collector << "'false'"
+#       end
+#     end
+#   end
+# end
 
 module ActiveModel
   module Type
@@ -187,7 +187,7 @@ module ActiveRecord
       def initialize(connection, logger, connection_parameters, config)
         super(connection, logger, config)
 
-        @visitor = Arel::Visitors::Redshift.new self
+        @visitor = Arel::Visitors::PostgreSQL.new self
         @visitor.extend(ConnectionAdapters::DetermineIfPreparableVisitor) if defined?(ConnectionAdapters::DetermineIfPreparableVisitor)
         @prepared_statements = false
 
@@ -504,7 +504,12 @@ module ActiveRecord
           update_typemap_for_default_timezone
 
           type_casted_binds = type_casted_binds(binds)
-          log(sql, name, binds, type_casted_binds) do
+
+          boolean_adjusted_sql = sql.
+            gsub(" = TRUE", " = 'true'").
+            gsub(" = FALSE", " = 'false'")
+
+          log(boolean_adjusted_sql, name, binds, type_casted_binds) do
             ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
               puts "SQL:"
               puts sql
@@ -515,8 +520,8 @@ module ActiveRecord
               binding.pry
 
               @connection.exec_params(
-                # sql.gsub(" = TRUE ", " = 'true' "),
-                sql,
+                # sql,
+                boolean_adjusted_sql,
                 type_casted_binds,
               )
             end
@@ -666,8 +671,8 @@ module ActiveRecord
         end
 
         def arel_visitor
-          # Arel::Visitors::PostgreSQL.new(self)
-          Arel::Visitors::Redshift.new(self)
+          Arel::Visitors::PostgreSQL.new(self)
+          # Arel::Visitors::Redshift.new(self)
         end
 
         def build_statement_pool
