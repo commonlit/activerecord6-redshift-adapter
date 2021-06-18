@@ -24,9 +24,9 @@ module ActiveModel
   module Type
     class RedshiftString < Type::ImmutableString
       def initialize(**args)
+        super
         @true  = -(args.delete(:true)&.to_s  || "true")
         @false = -(args.delete(:false)&.to_s || "false")
-        super
       end
     end
   end
