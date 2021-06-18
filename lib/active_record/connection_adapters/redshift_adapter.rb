@@ -20,6 +20,20 @@ require 'ipaddr'
 
 ActiveRecord::Tasks::DatabaseTasks.register_task(/redshift/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
 
+module Arel # :nodoc: all
+  module Visitors
+    class Redshift < PostgreSQL
+      def visit_Arel_Nodes_True(o, collector)
+        collector << "'true'"
+      end
+
+      def visit_Arel_Nodes_False(o, collector)
+        collector << "'false'"
+      end
+    end
+  end
+end
+
 module ActiveModel
   module Type
     class RedshiftString < Type::ImmutableString
@@ -498,7 +512,8 @@ module ActiveRecord
               binding.pry
 
               @connection.exec_params(
-                sql.gsub(" = TRUE ", " = 'true' "),
+                # sql.gsub(" = TRUE ", " = 'true' "),
+                sql,
                 type_casted_binds,
               )
             end
@@ -648,13 +663,13 @@ module ActiveRecord
         end
 
         def arel_visitor
-          Arel::Visitors::PostgreSQL.new(self)
+          # Arel::Visitors::PostgreSQL.new(self)
+          Arel::Visitors::Redshift.new(self)
         end
 
         def build_statement_pool
           StatementPool.new(@connection, self.class.type_cast_config_to_integer(@config[:statement_limit]))
         end
-
 
         def can_perform_case_insensitive_comparison_for?(column)
           @case_insensitive_cache ||= {}
