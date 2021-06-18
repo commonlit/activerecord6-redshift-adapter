@@ -511,16 +511,7 @@ module ActiveRecord
 
           log(boolean_adjusted_sql, name, binds, type_casted_binds) do
             ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-              puts "SQL:"
-              puts sql
-
-              puts "type_casted_binds"
-              puts type_casted_binds.inspect
-
-              binding.pry
-
               @connection.exec_params(
-                # sql,
                 boolean_adjusted_sql,
                 type_casted_binds,
               )
