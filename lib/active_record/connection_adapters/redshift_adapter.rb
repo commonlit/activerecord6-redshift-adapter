@@ -495,6 +495,8 @@ module ActiveRecord
               puts "type_casted_binds"
               puts type_casted_binds.inspect
 
+              binding.pry
+
               @connection.exec_params(
                 sql.gsub(" = TRUE ", " = 'true' "),
                 type_casted_binds,
