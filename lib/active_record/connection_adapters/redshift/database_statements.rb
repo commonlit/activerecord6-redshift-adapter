@@ -69,12 +69,23 @@ module ActiveRecord
           # In Rails 6.0 to_sql_and_binds began only returning sql, with
           # to_sql_and_binds serving as a replacement
           if respond_to?(:arel_from_relation, true)
+            puts "branch one"
             arel = arel_from_relation(arel)
             sql, binds = to_sql_and_binds(arel, [])
-            sql.gsub!(" = TRUE ", " = 'true' ").gsub(" = FALSE ", " = 'false' ")
+
+            puts "sql:"
+            puts sql
+            puts "binds:"
+            puts binds
           else
+            puts "branch one"
             arel, binds = binds_from_relation arel, []
-            sql = to_sql(arel, binds).gsub(" = TRUE ", " = 'true' ").gsub(" = FALSE ", " = 'false' ")
+
+            puts "sql:"
+            puts sql
+            puts "binds:"
+            puts binds
+            sql = to_sql(arel, binds)
           end
 
           execute_and_clear(sql, name, binds) do |result|
