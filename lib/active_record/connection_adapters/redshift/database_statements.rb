@@ -71,9 +71,10 @@ module ActiveRecord
           if respond_to?(:arel_from_relation, true)
             arel = arel_from_relation(arel)
             sql, binds = to_sql_and_binds(arel, [])
+            sql.gsub!(" = TRUE ", " = 'true' ").gsub(" = FALSE ", " = 'false' ")
           else
             arel, binds = binds_from_relation arel, []
-            sql = to_sql(arel, binds)
+            sql = to_sql(arel, binds).gsub(" = TRUE ", " = 'true' ").gsub(" = FALSE ", " = 'false' ")
           end
 
           execute_and_clear(sql, name, binds) do |result|
