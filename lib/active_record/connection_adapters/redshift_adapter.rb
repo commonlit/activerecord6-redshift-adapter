@@ -23,7 +23,10 @@ ActiveRecord::Tasks::DatabaseTasks.register_task(/redshift/, "ActiveRecord::Task
 module Arel # :nodoc: all
   module Visitors
     class Redshift < PostgreSQL
+      private
+
       def visit_Arel_Nodes_True(o, collector)
+        binding.pry
         collector << "'true'"
       end
 
@@ -184,7 +187,7 @@ module ActiveRecord
       def initialize(connection, logger, connection_parameters, config)
         super(connection, logger, config)
 
-        @visitor = Arel::Visitors::PostgreSQL.new self
+        @visitor = Arel::Visitors::Redshift.new self
         @visitor.extend(ConnectionAdapters::DetermineIfPreparableVisitor) if defined?(ConnectionAdapters::DetermineIfPreparableVisitor)
         @prepared_statements = false
 
